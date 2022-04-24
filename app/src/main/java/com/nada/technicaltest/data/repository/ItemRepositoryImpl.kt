@@ -3,8 +3,11 @@ package com.nada.technicaltest.data.repository
 import com.nada.technicaltest.data.entities.Item
 import com.nada.technicaltest.data.local.ItemDao
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ItemRepositoryImpl(
+@Singleton
+class ItemRepositoryImpl @Inject constructor(
     private val dao: ItemDao
 ): ItemRepository {
 

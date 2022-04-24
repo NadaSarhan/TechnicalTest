@@ -1,5 +1,6 @@
 package com.nada.technicaltest.di
 
+import android.app.Application
 import androidx.room.Room
 import com.nada.technicaltest.MainApplication
 import com.nada.technicaltest.data.local.AppDataBase
@@ -9,6 +10,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
 @Module
@@ -17,7 +20,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTodoDataBase(app: MainApplication): AppDataBase {
+    fun provideTodoDataBase(app: Application): AppDataBase {
         return Room.databaseBuilder(
             app,
             AppDataBase::class.java,
@@ -30,4 +33,9 @@ object AppModule {
     fun provideTodoRepository(db: AppDataBase) : ItemRepository {
         return ItemRepositoryImpl(db.dao)
     }
+
+    @Provides
+    @Singleton
+    fun provideAppCoroutinesScope() = CoroutineScope(SupervisorJob())
+
 }
