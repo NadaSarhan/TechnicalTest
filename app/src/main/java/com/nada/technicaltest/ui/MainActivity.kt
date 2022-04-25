@@ -22,16 +22,15 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: ItemListViewModel by viewModels()
-    lateinit var recyclerview : RecyclerView
+    lateinit var recyclerView : RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-        recyclerview = findViewById<RecyclerView>(R.id.my_recycler_view)
-        recyclerview.layoutManager = LinearLayoutManager(this)
+        recyclerView = findViewById<RecyclerView>(R.id.my_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         setupObservers()
 
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.items.observe(this, Observer {
             if(!it.equals(null)) {
                 val adapter = ItemAdapter(it)
-                recyclerview.adapter = adapter
+                recyclerView.adapter = adapter
             }
         })
     }

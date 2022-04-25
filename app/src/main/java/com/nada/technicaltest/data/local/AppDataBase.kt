@@ -12,16 +12,27 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Database(
-    entities = [Item::class],
-    version = 1
-)
-abstract class AppDataBase: RoomDatabase() {
+@Database(entities = [Item::class], version = 1)
+abstract class AppDataBase @Inject constructor(private val coroutineScope: CoroutineScope) : RoomDatabase() {
 
     abstract val dao: ItemDao
 
+//    val CALLBACK = object : RoomDatabase.Callback() {
+//        override fun onCreate(db: SupportSQLiteDatabase) {
+//            super.onCreate(db)
+//            coroutineScope.launch {
+//                val list = JsonFileReader().readFile()
+//                for (item in list.indices) {
+//                    dao.insertItem(list[item])
+//                }
+//            }
+//        }
+//    }
+
     companion object {
         @Volatile private var instance: AppDataBase? = null
+        lateinit var obj : CallBack
+//        val callback = CallBack()
 
         fun getDatabase(context: Context): AppDataBase =
             instance ?: synchronized(this) { instance ?: buildDatabase(context).also { instance = it } }
@@ -29,20 +40,19 @@ abstract class AppDataBase: RoomDatabase() {
         private fun buildDatabase(appContext: Context) =
             Room.databaseBuilder(appContext, AppDataBase::class.java, "item")
                 .fallbackToDestructiveMigration()
+                .addCallback(obj)
                 .build()
+
     }
 
-    inner class CallBack @Inject constructor(private val coroutineScope: CoroutineScope) : RoomDatabase.Callback() {
+    inner class CallBack : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             coroutineScope.launch {
-
-                var list = JsonFileReader().readFile()
-
+                val list = JsonFileReader().readFile()
                 for (item in list.indices) {
                     dao.insertItem(list[item])
                 }
-
             }
         }
     }
